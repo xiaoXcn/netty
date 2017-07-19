@@ -128,16 +128,7 @@ public class SpdyFrameCodec extends ByteToMessageDecoder
         boolean wasRead = read;
         read = false;
 
-        // Discard bytes of the cumulation buffer if needed.
-        discardSomeReadBytes();
-
-        if (!wasRead) {
-            if (!ctx.channel().config().isAutoRead()) {
-                ctx.read();
-            }
-        } else {
-            ctx.fireChannelReadComplete();
-        }
+        channelReadComplete(ctx, wasRead);
     }
 
     @Override

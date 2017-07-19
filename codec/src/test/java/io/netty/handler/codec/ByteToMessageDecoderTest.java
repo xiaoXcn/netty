@@ -311,6 +311,7 @@ public class ByteToMessageDecoderTest {
     @Test
     public void testFireChannelReadComplete() {
         final AtomicBoolean readCompleteExpected = new AtomicBoolean();
+        final AtomicInteger readCompleteCount = new AtomicInteger();
         EmbeddedChannel channel = new EmbeddedChannel(new ByteToMessageDecoder() {
 
             @Override
@@ -324,6 +325,7 @@ public class ByteToMessageDecoderTest {
             @Override
             public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
                 assertTrue(readCompleteExpected.get());
+                readCompleteCount.incrementAndGet();
             }
         });
 
@@ -339,5 +341,7 @@ public class ByteToMessageDecoderTest {
         assertTrue(readCompleteExpected.get());
 
         assertFalse(channel.finish());
+
+        assertEquals(1, readCompleteCount.get());
     }
 }
