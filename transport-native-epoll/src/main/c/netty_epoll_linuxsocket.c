@@ -178,46 +178,46 @@ static jint netty_epoll_linuxsocket_isIpTransparent(JNIEnv* env, jclass clazz, j
      return optval;
 }
 
-static void netty_epoll_linuxsocket_getTcpInfo(JNIEnv* env, jclass clazz, jint fd, jintArray array) {
+static void netty_epoll_linuxsocket_getTcpInfo(JNIEnv* env, jclass clazz, jint fd, jlongArray array) {
      struct tcp_info tcp_info;
      if (netty_unix_socket_getOption(env, fd, IPPROTO_TCP, TCP_INFO, &tcp_info, sizeof(tcp_info)) == -1) {
          return;
      }
-     unsigned int cArray[32];
-     cArray[0] = tcp_info.tcpi_state;
-     cArray[1] = tcp_info.tcpi_ca_state;
-     cArray[2] = tcp_info.tcpi_retransmits;
-     cArray[3] = tcp_info.tcpi_probes;
-     cArray[4] = tcp_info.tcpi_backoff;
-     cArray[5] = tcp_info.tcpi_options;
-     cArray[6] = tcp_info.tcpi_snd_wscale;
-     cArray[7] = tcp_info.tcpi_rcv_wscale;
-     cArray[8] = tcp_info.tcpi_rto;
-     cArray[9] = tcp_info.tcpi_ato;
-     cArray[10] = tcp_info.tcpi_snd_mss;
-     cArray[11] = tcp_info.tcpi_rcv_mss;
-     cArray[12] = tcp_info.tcpi_unacked;
-     cArray[13] = tcp_info.tcpi_sacked;
-     cArray[14] = tcp_info.tcpi_lost;
-     cArray[15] = tcp_info.tcpi_retrans;
-     cArray[16] = tcp_info.tcpi_fackets;
-     cArray[17] = tcp_info.tcpi_last_data_sent;
-     cArray[18] = tcp_info.tcpi_last_ack_sent;
-     cArray[19] = tcp_info.tcpi_last_data_recv;
-     cArray[20] = tcp_info.tcpi_last_ack_recv;
-     cArray[21] = tcp_info.tcpi_pmtu;
-     cArray[22] = tcp_info.tcpi_rcv_ssthresh;
-     cArray[23] = tcp_info.tcpi_rtt;
-     cArray[24] = tcp_info.tcpi_rttvar;
-     cArray[25] = tcp_info.tcpi_snd_ssthresh;
-     cArray[26] = tcp_info.tcpi_snd_cwnd;
-     cArray[27] = tcp_info.tcpi_advmss;
-     cArray[28] = tcp_info.tcpi_reordering;
-     cArray[29] = tcp_info.tcpi_rcv_rtt;
-     cArray[30] = tcp_info.tcpi_rcv_space;
-     cArray[31] = tcp_info.tcpi_total_retrans;
+     jlong cArray[32];
+     // Expand to 64 bits, then cast away unsigned-ness.
+     cArray[0] = (jlong) (unsigned long long) tcp_info.tcpi_state;
+     cArray[1] = (jlong) (unsigned long long) tcp_info.tcpi_ca_state;
+     cArray[2] = (jlong) (unsigned long long) tcp_info.tcpi_retransmits;
+     cArray[3] = (jlong) (unsigned long long) tcp_info.tcpi_probes;
+     cArray[4] = (jlong) (unsigned long long) tcp_info.tcpi_backoff;
+     cArray[5] = (jlong) (unsigned long long) tcp_info.tcpi_options;
+     cArray[7] = (jlong) (unsigned long long) tcp_info.tcpi_snd_wscale;
+     cArray[8] = (jlong) (unsigned long long) tcp_info.tcpi_rcv_wscale;
+     cArray[9] = (jlong) (unsigned long long) tcp_info.tcpi_rto;
+     cArray[10] = (jlong) (unsigned long long) tcp_info.tcpi_ato;
+     cArray[11] = (jlong) (unsigned long long) tcp_info.tcpi_snd_mss;
+     cArray[12] = (jlong) (unsigned long long) tcp_info.tcpi_rcv_mss;
+     cArray[13] = (jlong) (unsigned long long)  tcp_info.tcpi_unacked;
+     cArray[14] = (jlong) (unsigned long long) tcp_info.tcpi_sacked;
+     cArray[15] = (jlong) (unsigned long long) tcp_info.tcpi_lost;
+     cArray[16] = (jlong) (unsigned long long) tcp_info.tcpi_retrans;
+     cArray[17] = (jlong) (unsigned long long) tcp_info.tcpi_fackets;
+     cArray[18] = (jlong) (unsigned long long) tcp_info.tcpi_last_data_sent;
+     cArray[19] = (jlong) (unsigned long long) tcp_info.tcpi_last_ack_sent;
+     cArray[20] = (jlong) (unsigned long long) tcp_info.tcpi_last_data_recv;
+     cArray[21] = (jlong) (unsigned long long) tcp_info.tcpi_last_ack_recv;
+     cArray[22] = (jlong) (unsigned long long) tcp_info.tcpi_pmtu;
+     cArray[23] = (jlong) (unsigned long long) tcp_info.tcpi_rcv_ssthresh;
+     cArray[24] = (jlong) (unsigned long long) tcp_info.tcpi_rttvar;
+     cArray[25] = (jlong) (unsigned long long) tcp_info.tcpi_snd_ssthresh;
+     cArray[26] = (jlong) (unsigned long long) tcp_info.tcpi_snd_cwnd;
+     cArray[27] = (jlong) (unsigned long long) tcp_info.tcpi_advmss;
+     cArray[28] = (jlong) (unsigned long long)tcp_info.tcpi_reordering;
+     cArray[29] = (jlong) (unsigned long long) tcp_info.tcpi_rcv_rtt;
+     cArray[30] = (jlong) (unsigned long long) tcp_info.tcpi_rcv_space;
+     cArray[31] = (jlong) (unsigned long long) tcp_info.tcpi_total_retrans;
 
-     (*env)->SetIntArrayRegion(env, array, 0, 32, cArray);
+     (*env)->SetLongArrayRegion(env, array, 0, 32, cArray);
 }
 
 static jint netty_epoll_linuxsocket_isTcpCork(JNIEnv* env, jclass clazz, jint fd) {
@@ -286,7 +286,7 @@ static const JNINativeMethod fixed_method_table[] = {
   { "getTcpUserTimeout", "(I)I", (void *) netty_epoll_linuxsocket_getTcpUserTimeout },
   { "isIpFreeBind", "(I)I", (void *) netty_epoll_linuxsocket_isIpFreeBind },
   { "isIpTransparent", "(I)I", (void *) netty_epoll_linuxsocket_isIpTransparent },
-  { "getTcpInfo", "(I[I)V", (void *) netty_epoll_linuxsocket_getTcpInfo },
+  { "getTcpInfo", "(I[J)V", (void *) netty_epoll_linuxsocket_getTcpInfo },
   { "setTcpMd5Sig", "(I[BI[B)V", (void *) netty_epoll_linuxsocket_setTcpMd5Sig }
 };
 
